@@ -1,0 +1,83 @@
+{{>licenseInfo}}
+
+package {{package}};
+
+{{#imports}}import {{import}};
+{{/imports}}
+import erni.betterask.hiking.client.test.OpenApiValidator;
+
+import net.jqwik.api.*;
+import net.jqwik.api.lifecycle.AfterProperty;
+import net.jqwik.api.lifecycle.BeforeProperty;
+import net.jqwik.time.api.Dates;
+import net.jqwik.time.api.DateTimes;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+
+/**
+ * Model tests for {{classname}}
+ */
+class {{classname}}Test {
+    {{#models}}
+    {{#model}}
+    {{^vendorExtensions.x-is-one-of-interface}}
+    {{^isEnum}}
+    private static final OpenApiValidator VALIDATOR = new OpenApiValidator(
+        "{{{inputSpec}}}",
+        {{classname}}Test.class
+    );
+
+    public static class Valid{{classname}}ArbitrarySupplier implements ArbitrarySupplier<{{classname}}> {
+        @Override
+        public Arbitrary<{{classname}}> get() {
+            return Builders.withBuilder({{classname}}::builder).build({{classname}}.Builder::build);
+        }
+    }
+
+    {{/isEnum}}
+
+    @Property
+		{{#vendorExtensions.x-jqwik-property-attributes}}
+		({{{vendorExtensions.x-jqwik-property-attributes}}})
+		{{/vendorExtensions.x-jqwik-property-attributes}}
+    public void isValid(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
+        boolean result = VALIDATOR.validate(value);
+        assertThat(result, is(true));
+    }
+
+    @Property
+		{{#vendorExtensions.x-jqwik-property-attributes}}
+		({{{vendorExtensions.x-jqwik-property-attributes}}})
+		{{/vendorExtensions.x-jqwik-property-attributes}}
+    public void serializationEquality(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
+        String serialized1 = VALIDATOR.toJson(value);
+        {{classname}} deserialized1 = assertDoesNotThrow(() -> VALIDATOR.fromJson(serialized1, {{classname}}.class));
+        String serialized2 = VALIDATOR.toJson(deserialized1);
+        assertThat(serialized2, equalTo(serialized1));
+    }
+
+    @Property
+		{{#vendorExtensions.x-jqwik-property-attributes}}
+		({{{vendorExtensions.x-jqwik-property-attributes}}})
+		{{/vendorExtensions.x-jqwik-property-attributes}}
+    public void deserializationEquality(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
+        String serialized1 = VALIDATOR.toJson(value);
+        {{classname}} deserialized1 = assertDoesNotThrow(() -> VALIDATOR.fromJson(serialized1, {{classname}}.class));
+        String serialized2 = VALIDATOR.toJson(deserialized1);
+        {{classname}} deserialized2 = assertDoesNotThrow(() -> VALIDATOR.fromJson(serialized2, {{classname}}.class));
+        assertThat(deserialized2, equalTo(deserialized1));
+    }
+
+    {{#allVars}}
+    /**
+     * Test the property '{{name}}' of type '{{dataType}}'
+     */
+    {{/allVars}}
+    {{/vendorExtensions.x-is-one-of-interface}}
+    {{/model}}
+    {{/models}}
+}
