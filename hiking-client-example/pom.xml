@@ -26,7 +26,8 @@
         <jakarta-annotation.version>3.0.0</jakarta-annotation.version>
         <junit.version>5.11.4</junit.version>
         <junit-platform-runner.version>1.11.4</junit-platform-runner.version>
-        <swagger-annotations.version>2.2.3</swagger-annotations.version>
+        <swagger-annotations.version>2.2.28</swagger-annotations.version>
+        <swagger-parser.version>2.1.25</swagger-parser.version>
         <hibernate-validator.version>5.4.1.Final</hibernate-validator.version>
         <openapi4j.version>1.0.7</openapi4j.version>
         <jqwik.version>1.9.2</jqwik.version>
@@ -119,6 +120,11 @@
             <artifactId>swagger-annotations</artifactId>
             <version>${swagger-annotations.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>${swagger-parser.version}</version>
+        </dependency>
     <!-- Test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -156,6 +162,12 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>openapi-generator</artifactId>
+            <version>7.10.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
