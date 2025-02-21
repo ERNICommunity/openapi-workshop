@@ -9,16 +9,35 @@ import net.jqwik.api.Builders;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
-public class ArbitrarySupplierBuilder<T> implements ArbitrarySupplier<T> {
+public class ArbitrarySupplierBuilder<T> {
 
     private final Model model;
 
     public ArbitrarySupplierBuilder(@NotNull final String fname, @NotNull final String model) {
         this.model = new Model(fname, model);
-        for (Map.Entry<String, Schema> entry : this.model.getSchema().getProperties().entrySet()) {
-            final String name = entry.getKey();
-            final Schema<?> schema = entry.getValue();
-            switch (schema.getType())
+    }
+
+    public ArbitrarySupplierBuilder<T> toBuilder() {
+        return new ArbitrarySupplierBuilder<>(this);
+    }
+
+    static class Supplier<U> {
+
+        public ArbitrarySupplier<U> build() {
+
+            for (Map.Entry<String, Schema> entry : this.model.getSchema().getProperties().entrySet()) {
+                final String name = entry.getKey();
+                final Schema<?> schema = entry.getValue();
+                switch (schema.getType()) {
+
+                }
+            }
+
+            return  null;
+
+//            switch (schema.getType()) {
+//
+//            }
         }
     }
 

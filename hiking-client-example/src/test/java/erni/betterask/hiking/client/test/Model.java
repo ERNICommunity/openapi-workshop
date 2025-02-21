@@ -11,10 +11,14 @@ import javax.validation.constraints.NotNull;
 
 public class Model {
 
+    // ggf. weitere memeber Variable
+    private final OpenAPI openAPI;
+
     private final Schema<?> schema;
 
     public Model(@NotNull final String openApiSpec, @NotNull final String model) {
-        this.schema = this.parseOpenApi(openApiSpec).getComponents().getSchemas().get(model);
+        this.openAPI = this.parseOpenApi(openApiSpec);
+        this.schema = openAPI.getComponents().getSchemas().get(model);
     }
 
     public Schema<?> getSchema() {
@@ -46,7 +50,7 @@ public class Model {
     }
 
     private OpenAPI parseOpenApi(@NotNull final String openApiSpec) {
-        final OpenAPI openAPI = new OpenAPIParser().readLocation(openApiSpec, null, new ParseOptions()).getOpenAPI();
+        final OpenAPI openAPI = new OpenAPIParser().readLocation(openApiSpec, null, new ParseOptions(/*...date type, ...*/)).getOpenAPI();
         ModelUtils.getOpenApiVersion(openAPI, openApiSpec, null);
         InlineModelResolver resolver = new InlineModelResolver();
         return openAPI;

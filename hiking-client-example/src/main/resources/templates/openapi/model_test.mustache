@@ -31,12 +31,19 @@ class {{classname}}Test {
         {{classname}}Test.class
     );
 
-    public static class Valid{{classname}}ArbitrarySupplier implements ArbitrarySupplier<{{classname}}> {
-        @Override
-        public Arbitrary<{{classname}}> get() {
-            return Builders.withBuilder({{classname}}::builder).build({{classname}}.Builder::build);
-        }
-    }
+    // TODO
+    private static ArbitrarySupplier<{{classname}}> SUPPLIER = new ArbitrarySupplierBuilder<{{classname}}>(
+        "{{{inputSpec}}}", "{{classname}}", {{classname}}.class
+    ).build();
+
+    //
+
+//    public static class Valid{{classname}}ArbitrarySupplier implements ArbitrarySupplier<{{classname}}> {
+//        @Override
+//        public Arbitrary<{{classname}}> get() {
+//            return Builders.withBuilder({{classname}}::builder).build({{classname}}.Builder::build);
+//        }
+//    }
 
     {{/isEnum}}
 
@@ -44,7 +51,7 @@ class {{classname}}Test {
 		{{#vendorExtensions.x-jqwik-property-attributes}}
 		({{{vendorExtensions.x-jqwik-property-attributes}}})
 		{{/vendorExtensions.x-jqwik-property-attributes}}
-    public void isValid(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
+    public void isValid(@ForAll(supplier = SUPPLIER.getClass()) {{classname}} value) {
         boolean result = VALIDATOR.validate(value);
         assertThat(result, is(true));
     }
