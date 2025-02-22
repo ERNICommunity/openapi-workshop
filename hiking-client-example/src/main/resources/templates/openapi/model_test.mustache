@@ -4,7 +4,8 @@ package {{package}};
 
 {{#imports}}import {{import}};
 {{/imports}}
-import erni.betterask.hiking.client.test.OpenApiValidator;
+import erni.betterask.openapi.resttemplate.test.OpenApiValidator;
+import erni.betterask.openapi.resttemplate.test.OpenApiArbitrarySupplier;
 
 import net.jqwik.api.*;
 import net.jqwik.api.lifecycle.AfterProperty;
@@ -24,42 +25,38 @@ import static org.hamcrest.Matchers.is;
 class {{classname}}Test {
     {{#models}}
     {{#model}}
-    {{^vendorExtensions.x-is-one-of-interface}}
-    {{^isEnum}}
+        {{^vendorExtensions.x-is-one-of-interface}}
+            {{^isEnum}}
+
     private static final OpenApiValidator VALIDATOR = new OpenApiValidator(
-        "{{{inputSpec}}}",
+        "target/generated-sources/openapi/api/openapi.yaml",
         {{classname}}Test.class
     );
 
-    // TODO
-    private static ArbitrarySupplier<{{classname}}> SUPPLIER = new ArbitrarySupplierBuilder<{{classname}}>(
-        "{{{inputSpec}}}", "{{classname}}", {{classname}}.class
-    ).build();
-
-    //
-
-//    public static class Valid{{classname}}ArbitrarySupplier implements ArbitrarySupplier<{{classname}}> {
-//        @Override
-//        public Arbitrary<{{classname}}> get() {
-//            return Builders.withBuilder({{classname}}::builder).build({{classname}}.Builder::build);
-//        }
-//    }
-
-    {{/isEnum}}
+    public static class Valid{{classname}}ArbitrarySupplier implements ArbitrarySupplier<{{classname}}> {
+        @Override
+        public Arbitrary<{{classname}}> get() {
+            return new OpenApiArbitrarySupplier<{{classname}}>(
+                "target/generated-sources/openapi/api/openapi.yaml", "{{classname}}"
+            )
+            .get();
+        }
+    }
+            {{/isEnum}}
 
     @Property
-		{{#vendorExtensions.x-jqwik-property-attributes}}
-		({{{vendorExtensions.x-jqwik-property-attributes}}})
-		{{/vendorExtensions.x-jqwik-property-attributes}}
-    public void isValid(@ForAll(supplier = SUPPLIER.getClass()) {{classname}} value) {
+		    {{#vendorExtensions.x-jqwik-property-attributes}}
+                ({{{vendorExtensions.x-jqwik-property-attributes}}})
+		    {{/vendorExtensions.x-jqwik-property-attributes}}
+    public void isValid(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
         boolean result = VALIDATOR.validate(value);
         assertThat(result, is(true));
     }
 
     @Property
-		{{#vendorExtensions.x-jqwik-property-attributes}}
-		({{{vendorExtensions.x-jqwik-property-attributes}}})
-		{{/vendorExtensions.x-jqwik-property-attributes}}
+            {{#vendorExtensions.x-jqwik-property-attributes}}
+                ({{{vendorExtensions.x-jqwik-property-attributes}}})
+            {{/vendorExtensions.x-jqwik-property-attributes}}
     public void serializationEquality(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
         String serialized1 = VALIDATOR.toJson(value);
         {{classname}} deserialized1 = assertDoesNotThrow(() -> VALIDATOR.fromJson(serialized1, {{classname}}.class));
@@ -68,9 +65,9 @@ class {{classname}}Test {
     }
 
     @Property
-		{{#vendorExtensions.x-jqwik-property-attributes}}
-		({{{vendorExtensions.x-jqwik-property-attributes}}})
-		{{/vendorExtensions.x-jqwik-property-attributes}}
+            {{#vendorExtensions.x-jqwik-property-attributes}}
+                ({{{vendorExtensions.x-jqwik-property-attributes}}})
+            {{/vendorExtensions.x-jqwik-property-attributes}}
     public void deserializationEquality(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
         String serialized1 = VALIDATOR.toJson(value);
         {{classname}} deserialized1 = assertDoesNotThrow(() -> VALIDATOR.fromJson(serialized1, {{classname}}.class));
@@ -78,13 +75,15 @@ class {{classname}}Test {
         {{classname}} deserialized2 = assertDoesNotThrow(() -> VALIDATOR.fromJson(serialized2, {{classname}}.class));
         assertThat(deserialized2, equalTo(deserialized1));
     }
+            {{#nil}}
+            {{#allVars}}
 
-    {{#allVars}}
     /**
      * Test the property '{{name}}' of type '{{dataType}}'
      */
-    {{/allVars}}
-    {{/vendorExtensions.x-is-one-of-interface}}
+            {{/allVars}}
+            {{/nil}}
+        {{/vendorExtensions.x-is-one-of-interface}}
     {{/model}}
     {{/models}}
 }

@@ -1,4 +1,4 @@
-package erni.betterask.hiking.client.test;
+package erni.betterask.openapi.resttemplate.test;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
