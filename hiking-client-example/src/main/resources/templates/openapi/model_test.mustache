@@ -41,10 +41,25 @@ class {{classname}}Test {
             .get();
         }
     }
+
+    public static class Invalid{{classname}}ArbitrarySupplier implements ArbitrarySupplier<{{classname}}> {
+        @Override
+        public Arbitrary<{{classname}}> get() {
+            return new OpenApiArbitrarySupplier<>(
+                "target/generated-sources/openapi/api/openapi.yaml", {{classname}}.class
+            )
+            .get();
+        }
+    }
             {{/isEnum}}
 
     @Property
     public void showValues(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
+        System.out.println(value);
+    }
+
+    @Property
+    public void showInvalidValues(@ForAll(supplier = Invalid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
         System.out.println(value);
     }
 
@@ -56,6 +71,16 @@ class {{classname}}Test {
     public void isValid(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
         boolean result = VALIDATOR.validate(value);
         assertThat(result, is(true));
+    }
+
+    @Disabled("TODO")
+    @Property
+            {{#vendorExtensions.x-jqwik-property-attributes}}
+                ({{{vendorExtensions.x-jqwik-property-attributes}}})
+            {{/vendorExtensions.x-jqwik-property-attributes}}
+    public void isInvalid(@ForAll(supplier = Invalid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
+        boolean result = VALIDATOR.validate(value);
+        assertThat(result, is(false));
     }
 
     @Disabled("TODO")
