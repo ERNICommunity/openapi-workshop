@@ -10,6 +10,7 @@ import net.jqwik.api.Builders;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -114,7 +115,10 @@ public class InvalidObjectSupplier<U> implements ArbitrarySupplier<U> {
             case "array" -> {
                 var itemSchema = openApiArbitrarySupplier.getRef(propertySchema.getItems().get$ref());
                 var itemArbitrary = getPropertyArbitrary(propertyName, itemSchema);
-                yield new ArraySupplier(itemSchema, itemArbitrary).get();
+                var supplier = Objects.requireNonNullElse(propertySchema.getUniqueItems(), false) ?
+                        new UniqueItemsArraySupplier(itemSchema, itemArbitrary) :
+                        new ArraySupplier(itemSchema, itemArbitrary);
+                yield supplier.get();
             }
             case String s when propertySchema.getEnum() != null -> {
                 String enumName = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1) + "Enum";
