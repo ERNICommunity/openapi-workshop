@@ -9,9 +9,12 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.ArbitrarySupplier;
 import net.jqwik.api.Builders;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
 
@@ -31,45 +34,55 @@ public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
     @Override
     public Arbitrary<T> get() {
 
-        // TODO: avoid hardcoding and generalize
-        //       --> how to detect abstract types and all of their concrete "child" types ?
-        if (schema.getTitle().equals("RouteSegment")) {
-            return Arbitraries.oneOf(
-                    (Arbitrary<T>) new ObjectSupplier<>(openApi, "HikingSegment").get(),
-                    (Arbitrary<T>) new ObjectSupplier<>(openApi, "MountainRideSegment").get()
-            );
-        }
-        if (schema.getTitle().equals("TourSegment")) {
-            return Arbitraries.oneOf(
-                    // FIXME: grundlegendes API Design- bzw. Implementation-Problem:
-                    //        "public class HikingSegment extends RouteSegment", da mit Java Klassen keine Mehrfachvererbung möglich
-                    //        --> "Could not resolve type id 'HIKING_SEGMENT' as a subtype of `erni.betterask.hiking.client.model.TourSegment`"
-//                (Arbitrary<U>) new ObjectSupplier<>(openApi, "HikingSegment").get(),
-                    (Arbitrary<T>) new ObjectSupplier<>(openApi, "ClimbingSegment").get()
-            );
+        Set<Arbitrary<T>> allSubtypeArbitraries = new HashSet<>();
+
+        // process all strict subtypes, excluding self
+        if (openApi.getDiscriminatorProperty(schema).isPresent()) {
+            openApi.getSubTypes(schema).stream()
+                    .filter(Predicate.not(schema::equals))
+                    // FIXME: grundlegendes API Design- bzw. Implementations-Problem
+                    //        -> Serialisierung-Identity Test bricht, wenn man den Filter raus nimmt,
+                    //           weil beim "TourSegment" Discriminator Mapping, Zeile 149 im api.yml, "HikingSegment"
+                    //           zugelassen ist, obwohl "HikingSegment" kein "TourSegment" sein _kann_ weil es schon, siehe
+                    //           Zeile 183, schon "allOf" "RouteSegment" hat und somit ein "RouteSegment" ist,
+                    //           und Java keine Mehrfach-Klassenvererbung zulässt.
+                    //        -> Der Fehler ist:
+                    //              com.fasterxml.jackson.databind.exc.InvalidTypeIdException:
+                    //              Could not resolve type id 'HIKING_SEGMENT' as a subtype of `erni.betterask.hiking.client.model.TourSegment`:
+                    //              Class `erni.betterask.hiking.client.model.HikingSegment` not subtype of `erni.betterask.hiking.client.model.TourSegment`
+                    .filter(sts -> !(schema.getTitle().equals("TourSegment") && sts.getTitle().equals("HikingSegment")))
+                    .map(subtypeSchema -> new ObjectSupplier<T>(openApi, subtypeSchema.getTitle()).get())
+                    .forEach(allSubtypeArbitraries::add);
         }
 
-        Builders.BuilderCombinator<Object> builderCombinator = Builders.withBuilder(builderHelper.getBuilderSupplier());
+        // process self, if simple type or included in discriminator mapping
+        if (openApi.getDiscriminatorProperty(schema).isEmpty()
+                || openApi.getDiscriminatorProperty(schema).isPresent() && openApi.getSubTypes(schema).contains(schema)) {
 
-        builderCombinator = openApi.getAllProperties(schema).entrySet().stream().reduce(
-                builderCombinator,
-                (bc, entry) -> {
-                    String propertyName = entry.getKey();
-                    Schema<?> propertySchema = entry.getValue();
-                    BiFunction<Object, Object, Object> builderMutator = getBuilderMutator(propertyName, propertySchema);
-                    Arbitrary<?> propertyArbitrary = getPropertyArbitrary(propertyName, propertySchema);
-                    return bc.use(propertyArbitrary).in(builderMutator);
-                },
-                (bc1, bc2) -> {
-                    throw new UnsupportedOperationException();
-                }
-        );
+            Builders.BuilderCombinator<Object> builderCombinator = Builders.withBuilder(builderHelper.getBuilderSupplier());
+
+            builderCombinator = openApi.getAllProperties(schema).entrySet().stream().reduce(
+                    builderCombinator,
+                    (bc, entry) -> {
+                        String propertyName = entry.getKey();
+                        Schema<?> propertySchema = entry.getValue();
+                        BiFunction<Object, Object, Object> builderMutator = getBuilderMutator(propertyName, propertySchema);
+                        Arbitrary<?> propertyArbitrary = getPropertyArbitrary(propertyName, propertySchema);
+                        return bc.use(propertyArbitrary).in(builderMutator);
+                    },
+                    (bc1, bc2) -> {
+                        throw new UnsupportedOperationException();
+                    }
+            );
 
 //            return Builders.withBuilder(MountainRideSegment::builder)
 //                    .use(((ArbitrarySupplier<String>) null).get()).in(MountainRideSegment.Builder::from)
 ////                    .use(/* 1. Property */ map.get("from")).in(MountainRideSegment.Builder::from)
 
-        return builderCombinator.build(builderHelper.getBuildFunction());
+            allSubtypeArbitraries.add(builderCombinator.build(builderHelper.getBuildFunction()));
+        }
+
+        return Arbitraries.oneOf(allSubtypeArbitraries);
     }
 
     @SneakyThrows

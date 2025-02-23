@@ -2,16 +2,12 @@ package erni.betterask.openapi.resttemplate.test;
 
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Discriminator;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.SneakyThrows;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static io.swagger.v3.oas.models.Components.COMPONENTS_SCHEMAS_REF;
 
@@ -38,24 +34,42 @@ public class OpenApi {
         return getSchema(ref.substring(COMPONENTS_SCHEMAS_REF.length()));
     }
 
-    @SuppressWarnings("unchecked")
+    public Optional<String> getDiscriminatorProperty(Schema<?> schema) {
+        return Optional.ofNullable(schema.getDiscriminator())
+                .map(Discriminator::getPropertyName);
+    }
+
+    public Set<Schema<?>> getSubTypes(Schema<?> schema) {
+        return schema.getDiscriminator().getMapping().values().stream()
+                .map(this::getRef)
+                .collect(Collectors.toSet());
+    }
+
     public Map<String, Schema<?>> getAllProperties(Schema<?> schema) {
 
-        Stream<Schema<?>> schemaStream = Stream.of(
-                        Stream.of(schema),
-                        Optional.ofNullable(schema.getAllOf()).stream()
-                                .flatMap(Collection::stream)
-                                .map(Schema::get$ref)
-                                .map(this::getRef)
-                )
-                .flatMap(Function.identity());
+        if (schema.getProperties() != null) {
+            return getProperties(schema);
+        }
+        if (schema.getAllOf() != null) {
+            return schema.getAllOf().stream()
+                    .map(Schema::get$ref)
+                    .map(this::getRef)
+                    .map(this::getProperties)
+                    .map(Map::entrySet)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
+        return Collections.emptyMap();
+    }
 
-        return schemaStream
-                .map(Schema::getProperties)
-                .filter(Objects::nonNull)
-                .map(Map::entrySet)
-                .flatMap(Collection::stream)
-                .filter(e -> !"discriminator".equals(e.getKey()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    private Map<String, Schema<?>> getProperties(Schema<?> schema) {
+        var map = new HashMap<>(Objects.requireNonNullElseGet(getProperProperties(schema), Collections::emptyMap));
+        getDiscriminatorProperty(schema).ifPresent(map::remove);
+        return map;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Map<String, Schema<?>> getProperProperties(Schema<?> schema) {
+        return (Map<String, Schema<?>>) (Map) schema.getProperties();
     }
 }
