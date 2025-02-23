@@ -8,7 +8,9 @@ import net.jqwik.api.ArbitrarySupplier;
 import net.jqwik.api.Builders;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -82,11 +84,19 @@ public class ObjectSupplier<U> implements ArbitrarySupplier<U> {
 
         Builders.BuilderCombinator<Object> builderCombinator = Builders.withBuilder(builderSupplier);
 
-        schema.getProperties().forEach((propertyName, propertySchema) -> {
-            BiFunction<Object, Object, Object> builderMutator = getBuilderMutator(propertyName, propertySchema);
-            Arbitrary<?> propertyArbitrary = getPropertyArbitrary(propertySchema);
-            builderCombinator.use(propertyArbitrary).in(builderMutator);
-        });
+        builderCombinator = Optional.ofNullable(schema.getProperties()).orElse(Collections.emptyMap()).entrySet().stream().reduce(
+                builderCombinator,
+                (bc, entry) -> {
+                    String propertyName = entry.getKey();
+                    Schema<?> propertySchema = entry.getValue();
+                    BiFunction<Object, Object, Object> builderMutator = getBuilderMutator(propertyName, propertySchema);
+                    Arbitrary<?> propertyArbitrary = getPropertyArbitrary(propertyName, propertySchema);
+                    return bc.use(propertyArbitrary).in(builderMutator);
+                },
+                (bc1, bc2) -> {
+                    throw new UnsupportedOperationException();
+                }
+        );
 
 //            return Builders.withBuilder(MountainRideSegment::builder)
 //                    .use(((ArbitrarySupplier<String>) null).get()).in(MountainRideSegment.Builder::from)
@@ -96,19 +106,19 @@ public class ObjectSupplier<U> implements ArbitrarySupplier<U> {
     }
 
     @SneakyThrows
-    private Arbitrary<?> getPropertyArbitrary(Schema<?> propertySchema) {
+    private Arbitrary<?> getPropertyArbitrary(String propertyName, Schema<?> propertySchema) {
         return switch (propertySchema.getType()) {
             case "object" -> {
                 yield new ObjectSupplier<>(openApiArbitrarySupplier, propertySchema).get();
             }
             case "array" -> {
                 var itemSchema = openApiArbitrarySupplier.getRef(propertySchema.getItems().get$ref());
-                var itemArbitrary = getPropertyArbitrary(itemSchema);
+                var itemArbitrary = getPropertyArbitrary(propertyName, itemSchema);
                 yield new ArraySupplier(itemSchema, itemArbitrary).get();
             }
-            // TODO: better detection of discriminator case
             case String s when propertySchema.getEnum() != null -> {
-                yield Arbitraries.defaultFor(Class.forName(modelClass.getName() + "$DiscriminatorEnum"));
+                String enumName = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1) + "Enum";
+                yield Arbitraries.defaultFor(Class.forName(modelClass.getName() + "$" + enumName));
             }
             case "string" -> new StringSupplier(propertySchema).get();
             case "integer" -> new IntegerSupplier(propertySchema).get();
@@ -126,8 +136,9 @@ public class ObjectSupplier<U> implements ArbitrarySupplier<U> {
         return switch (propertySchema.getType()) {
             case "object" -> getObjectWith(propertyName, propertySchema.getTitle());
             case "array" -> getWith(propertyName, List.class);
-            case String s when schema.getDiscriminator() != null && propertyName.equals(schema.getDiscriminator().getPropertyName()) -> {
-                yield getObjectWith(propertyName, schema.getTitle() + "$DiscriminatorEnum");
+            case String s when propertySchema.getEnum() != null -> {
+                String enumName = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1) + "Enum";
+                yield getObjectWith(propertyName, schema.getTitle() + "$" + enumName);
             }
             case "string" -> getWith(propertyName, String.class);
             case "integer" -> getWith(propertyName, Integer.class);

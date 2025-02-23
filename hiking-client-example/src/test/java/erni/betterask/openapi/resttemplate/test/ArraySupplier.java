@@ -12,19 +12,18 @@ public class ArraySupplier implements ArbitrarySupplier<List<Object>> {
 
     private final Schema<?> schema;
     private final Arbitrary<Object> itemArbitrary;
-    @SuppressWarnings("unchecked")
 
     @SneakyThrows
+    @SuppressWarnings("unchecked")
     public ArraySupplier(Schema<?> schema, Arbitrary<?> itemArbitrary) {
         this.schema = schema;
         this.itemArbitrary = (Arbitrary<Object>) itemArbitrary;
     }
 
-
     @Override
     public Arbitrary<List<Object>> get() {
         return itemArbitrary.list()
                 .ofMinSize(Objects.requireNonNullElse(schema.getMinItems(), 0))
-                .ofMaxSize(Objects.requireNonNullElse(schema.getMaxItems(), 99));
+                .ofMaxSize(Math.min(Objects.requireNonNullElse(schema.getMaxItems(), Integer.MAX_VALUE), 99));
     }
 }

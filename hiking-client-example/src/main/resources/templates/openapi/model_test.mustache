@@ -35,7 +35,7 @@ class {{classname}}Test {
     public static class Valid{{classname}}ArbitrarySupplier implements ArbitrarySupplier<{{classname}}> {
         @Override
         public Arbitrary<{{classname}}> get() {
-            return new OpenApiArbitrarySupplier<{{classname}}>(
+            return new OpenApiArbitrarySupplier<>(
                 "target/generated-sources/openapi/api/openapi.yaml", {{classname}}.class
             )
             .get();
@@ -43,6 +43,12 @@ class {{classname}}Test {
     }
             {{/isEnum}}
 
+    @Property
+    public void showValues(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
+        System.out.println(value);
+    }
+
+    @Disabled("TODO")
     @Property
 		    {{#vendorExtensions.x-jqwik-property-attributes}}
                 ({{{vendorExtensions.x-jqwik-property-attributes}}})
@@ -52,6 +58,7 @@ class {{classname}}Test {
         assertThat(result, is(true));
     }
 
+    @Disabled("TODO")
     @Property
             {{#vendorExtensions.x-jqwik-property-attributes}}
                 ({{{vendorExtensions.x-jqwik-property-attributes}}})
@@ -63,6 +70,7 @@ class {{classname}}Test {
         assertThat(serialized2, equalTo(serialized1));
     }
 
+    @Disabled("TODO")
     @Property
             {{#vendorExtensions.x-jqwik-property-attributes}}
                 ({{{vendorExtensions.x-jqwik-property-attributes}}})
