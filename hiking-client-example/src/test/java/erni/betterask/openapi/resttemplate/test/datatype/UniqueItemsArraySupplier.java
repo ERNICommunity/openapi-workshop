@@ -1,4 +1,4 @@
-package erni.betterask.openapi.resttemplate.test;
+package erni.betterask.openapi.resttemplate.test.datatype;
 
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.SneakyThrows;
@@ -8,14 +8,14 @@ import net.jqwik.api.ArbitrarySupplier;
 import java.util.Objects;
 import java.util.Set;
 
-public class ArrayAsSetSupplier implements ArbitrarySupplier<Set<Object>> {
+public class UniqueItemsArraySupplier implements ArbitrarySupplier<Set<Object>> {
 
     private final Schema<?> schema;
     private final Arbitrary<Object> itemArbitrary;
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public ArrayAsSetSupplier(Schema<?> schema, Arbitrary<?> itemArbitrary) {
+    public UniqueItemsArraySupplier(Schema<?> schema, Arbitrary<?> itemArbitrary) {
         this.schema = schema;
         this.itemArbitrary = (Arbitrary<Object>) itemArbitrary;
     }

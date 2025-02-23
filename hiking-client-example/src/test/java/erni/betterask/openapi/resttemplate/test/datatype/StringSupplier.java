@@ -1,4 +1,4 @@
-package erni.betterask.openapi.resttemplate.test;
+package erni.betterask.openapi.resttemplate.test.datatype;
 
 import io.swagger.v3.oas.models.media.Schema;
 import net.jqwik.api.Arbitraries;

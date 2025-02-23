@@ -1,4 +1,4 @@
-package erni.betterask.openapi.resttemplate.test;
+package erni.betterask.openapi.resttemplate.test.datatype;
 
 import io.swagger.v3.oas.models.media.Schema;
 import net.jqwik.api.Arbitraries;
@@ -18,7 +18,6 @@ public class IntegerSupplier implements ArbitrarySupplier<Integer> {
         return Arbitraries.integers()
                 .lessOrEqual(Boolean.TRUE.equals(this.schema.getExclusiveMaximum()) ? this.schema.getMaximum().intValue() - 1 : this.schema.getMaximum().intValue())
                 .greaterOrEqual(Boolean.TRUE.equals(this.schema.getExclusiveMinimum()) ? this.schema.getMinimum().intValue() + 1 : this.schema.getMinimum().intValue())
-                .injectNull(Boolean.TRUE.equals(this.schema.getNullable()) ? 0.1 : 0.0)
-                ;
+                .injectNull(Boolean.TRUE.equals(this.schema.getNullable()) ? 0.1 : 0.0);
     }
 }
