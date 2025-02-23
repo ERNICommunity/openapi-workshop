@@ -3,9 +3,6 @@ package {{package}};
 
 {{#imports}}import {{import}};
 {{/imports}}
-import erni.betterask.openapi.resttemplate.test.OpenApiValidator;
-import erni.betterask.openapi.resttemplate.test.ValidArbitrarySupplier;
-import erni.betterask.openapi.resttemplate.test.InvalidArbitrarySupplier;
 
 import net.jqwik.api.*;
 import net.jqwik.api.lifecycle.AfterProperty;
@@ -13,11 +10,11 @@ import net.jqwik.api.lifecycle.BeforeProperty;
 import net.jqwik.time.api.Dates;
 import net.jqwik.time.api.DateTimes;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.*;
+
+import erni.betterask.openapi.resttemplate.test.OpenApiValidator;
+import erni.betterask.openapi.resttemplate.test.ValidArbitrarySupplier;
+import erni.betterask.openapi.resttemplate.test.InvalidArbitrarySupplier;
 
 /**
  * Model tests for {{classname}}
@@ -54,24 +51,25 @@ class {{classname}}Test {
     }
             {{/isEnum}}
 
+    @Disabled("for development only")
     @Property
     public void showValues(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
         System.out.println(value);
     }
 
+    @Disabled("for development only")
     @Property
     public void showInvalidValues(@ForAll(supplier = Invalid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
         System.out.println(value);
     }
 
-    @Disabled("TODO")
     @Property
 		    {{#vendorExtensions.x-jqwik-property-attributes}}
                 ({{{vendorExtensions.x-jqwik-property-attributes}}})
 		    {{/vendorExtensions.x-jqwik-property-attributes}}
     public void isValid(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
         boolean result = VALIDATOR.validate(value);
-        assertThat(result, is(true));
+        assertThat(result).isTrue();
     }
 
     @Disabled("TODO")
@@ -81,32 +79,30 @@ class {{classname}}Test {
             {{/vendorExtensions.x-jqwik-property-attributes}}
     public void isInvalid(@ForAll(supplier = Invalid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
         boolean result = VALIDATOR.validate(value);
-        assertThat(result, is(false));
+        assertThat(result).isTrue();
     }
 
-    @Disabled("TODO")
     @Property
             {{#vendorExtensions.x-jqwik-property-attributes}}
                 ({{{vendorExtensions.x-jqwik-property-attributes}}})
             {{/vendorExtensions.x-jqwik-property-attributes}}
     public void serializationEquality(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
         String serialized1 = VALIDATOR.toJson(value);
-        {{classname}} deserialized1 = assertDoesNotThrow(() -> VALIDATOR.fromJson(serialized1, {{classname}}.class));
+        {{classname}} deserialized1 = VALIDATOR.fromJson(serialized1, {{classname}}.class);
         String serialized2 = VALIDATOR.toJson(deserialized1);
-        assertThat(serialized2, equalTo(serialized1));
+        assertThat(serialized2).isEqualTo(serialized1);
     }
 
-    @Disabled("TODO")
     @Property
             {{#vendorExtensions.x-jqwik-property-attributes}}
                 ({{{vendorExtensions.x-jqwik-property-attributes}}})
             {{/vendorExtensions.x-jqwik-property-attributes}}
     public void deserializationEquality(@ForAll(supplier = Valid{{classname}}ArbitrarySupplier.class) {{classname}} value) {
         String serialized1 = VALIDATOR.toJson(value);
-        {{classname}} deserialized1 = assertDoesNotThrow(() -> VALIDATOR.fromJson(serialized1, {{classname}}.class));
+        {{classname}} deserialized1 = VALIDATOR.fromJson(serialized1, {{classname}}.class);
         String serialized2 = VALIDATOR.toJson(deserialized1);
-        {{classname}} deserialized2 = assertDoesNotThrow(() -> VALIDATOR.fromJson(serialized2, {{classname}}.class));
-        assertThat(deserialized2, equalTo(deserialized1));
+        {{classname}} deserialized2 = VALIDATOR.fromJson(serialized2, {{classname}}.class);
+        assertThat(deserialized2).isEqualTo(deserialized1);
     }
             {{#nil}}
             {{#allVars}}

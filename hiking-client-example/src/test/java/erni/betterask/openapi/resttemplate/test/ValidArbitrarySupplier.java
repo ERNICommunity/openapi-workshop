@@ -25,11 +25,11 @@ public class ValidArbitrarySupplier<T> implements ArbitrarySupplier<T> {
         return new ObjectSupplier<T>(this, getSchema(modelClass.getSimpleName())).get();
     }
 
-    public Schema<?> getRef(String ref) {
+    Schema<?> getRef(String ref) {
         return getSchema(ref.substring(COMPONENTS_SCHEMAS_REF.length()));
     }
 
-    private Schema<?> getSchema(String title) {
+    Schema<?> getSchema(String title) {
         return openAPI.getComponents().getSchemas().get(title);
     }
 }

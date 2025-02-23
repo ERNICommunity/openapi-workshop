@@ -20,12 +20,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
+import java.nio.file.Path;
 
 public class OpenApiValidator {
+
     private final OpenApi3 api;
     private final ObjectMapper om;
     private final Logger logger;
+
     public OpenApiValidator(String fnameApi, Class<?> clazz) {
         this.api = createOpenApi3(fnameApi);
         this.om = JsonMapper.builder()
@@ -39,27 +43,30 @@ public class OpenApiValidator {
 
     private OpenApi3 createOpenApi3(String apiFname) {
         try {
-            return new OpenApi3Parser()
-                    .parse(java.nio.file.Path.of(apiFname).toUri().toURL(),
-                            true);
+            var url = Path.of(apiFname).toUri().toURL();
+            return new OpenApi3Parser().parse(url, true);
         } catch(ResolutionException
                 | ValidationException
                 | MalformedURLException ex) {
             throw new RuntimeException(ex);
         }
     }
+
     public String toJson(Object any) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             this.om.writeValue(out, any);
             return out.toString();
         } catch(IOException ex) {
-            throw new RuntimeException(ex);
+            throw new UncheckedIOException(ex);
         }
     }
 
-    public <T> T fromJson(String json, Class<T> clazz)
-            throws JsonProcessingException {
-        return this.om.readValue(json, clazz);
+    public <T> T fromJson(String json, Class<T> clazz) {
+        try {
+            return this.om.readValue(json, clazz);
+        } catch (JsonProcessingException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     public <T> boolean validate(T value) {

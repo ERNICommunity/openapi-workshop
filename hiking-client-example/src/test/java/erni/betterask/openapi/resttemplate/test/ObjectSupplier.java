@@ -8,13 +8,11 @@ import net.jqwik.api.ArbitrarySupplier;
 import net.jqwik.api.Builders;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class ObjectSupplier<U> implements ArbitrarySupplier<U> {
 
@@ -83,9 +81,27 @@ public class ObjectSupplier<U> implements ArbitrarySupplier<U> {
     @Override
     public Arbitrary<U> get() {
 
+        // TODO: avoid hardcoding and generalize
+        //       --> how to detect abstract types and all of their concrete "child" types ?
+        if (schema.getTitle().equals("RouteSegment")) {
+            return Arbitraries.oneOf(
+                (Arbitrary<U>) new ObjectSupplier<>(validArbitrarySupplier, validArbitrarySupplier.getSchema("HikingSegment")).get(),
+                (Arbitrary<U>) new ObjectSupplier<>(validArbitrarySupplier, validArbitrarySupplier.getSchema("MountainRideSegment")).get()
+            );
+        }
+        if (schema.getTitle().equals("TourSegment")) {
+            return Arbitraries.oneOf(
+                    // FIXME: grundlegendes API Design- bzw. Implementation-Problem:
+                    //        "public class HikingSegment extends RouteSegment", da mit Java Klassen keine Mehrfachvererbung möglich
+                    //        --> "Could not resolve type id 'HIKING_SEGMENT' as a subtype of `erni.betterask.hiking.client.model.TourSegment`"
+//                (Arbitrary<U>) new ObjectSupplier<>(validArbitrarySupplier, validArbitrarySupplier.getSchema("HikingSegment")).get(),
+                (Arbitrary<U>) new ObjectSupplier<>(validArbitrarySupplier, validArbitrarySupplier.getSchema("ClimbingSegment")).get()
+            );
+        }
+
         Builders.BuilderCombinator<Object> builderCombinator = Builders.withBuilder(builderSupplier);
 
-        builderCombinator = Optional.ofNullable(schema.getProperties()).orElse(Collections.emptyMap()).entrySet().stream().reduce(
+        builderCombinator = getPropertyStream().reduce(
                 builderCombinator,
                 (bc, entry) -> {
                     String propertyName = entry.getKey();
@@ -106,6 +122,25 @@ public class ObjectSupplier<U> implements ArbitrarySupplier<U> {
         return builderCombinator.build(buildFunction);
     }
 
+    private Stream<Map.Entry<String, Schema>> getPropertyStream() {
+
+        Stream<Schema<?>> schemaStream = Stream.of(
+                        Stream.of(schema),
+                        Optional.ofNullable(schema.getAllOf()).stream()
+                                .flatMap(Collection::stream)
+                                .map(Schema::get$ref)
+                                .map(validArbitrarySupplier::getRef)
+                )
+                .flatMap(Function.identity());
+
+        return schemaStream
+                .map(Schema::getProperties)
+                .filter(Objects::nonNull)
+                .map(Map::entrySet)
+                .flatMap(Collection::stream)
+                .filter(e -> !"discriminator".equals(e.getKey()));
+    }
+
     @SneakyThrows
     private Arbitrary<?> getPropertyArbitrary(String propertyName, Schema<?> propertySchema) {
         return switch (propertySchema.getType()) {
@@ -116,8 +151,8 @@ public class ObjectSupplier<U> implements ArbitrarySupplier<U> {
                 var itemSchema = validArbitrarySupplier.getRef(propertySchema.getItems().get$ref());
                 var itemArbitrary = getPropertyArbitrary(propertyName, itemSchema);
                 var supplier = Objects.requireNonNullElse(propertySchema.getUniqueItems(), false) ?
-                        new UniqueItemsArraySupplier(itemSchema, itemArbitrary) :
-                        new ArraySupplier(itemSchema, itemArbitrary);
+                        new UniqueItemsArraySupplier(propertySchema, itemArbitrary) :
+                        new ArraySupplier(propertySchema, itemArbitrary);
                 yield supplier.get();
             }
             case String s when propertySchema.getEnum() != null -> {

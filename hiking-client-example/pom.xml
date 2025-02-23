@@ -150,6 +150,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.36</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.jqwik</groupId>
@@ -235,12 +236,15 @@
                                 <generateClientAsBean>true</generateClientAsBean>
                                 <openApiNullable>false</openApiNullable>
                                 <delegatePattern>true</delegatePattern>
+
                                 <apiPackage>erni.betterask.hiking.client.api</apiPackage>
                                 <invokerPackage>erni.betterask.hiking.client.invoker</invokerPackage>
                                 <modelPackage>erni.betterask.hiking.client.model</modelPackage>
+
                                 <groupId>${project.groupId}</groupId>
                                 <artifactId>hiking-java-client</artifactId>
                                 <artifactVersion>${project.version}</artifactVersion>
+
                                 <parentGroupId>${project.groupId}</parentGroupId>
                                 <parentArtifactId>${project.artifactId}</parentArtifactId>
                                 <parentVersion>${project.version}</parentVersion>

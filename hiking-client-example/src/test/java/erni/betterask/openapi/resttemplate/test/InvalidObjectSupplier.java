@@ -116,8 +116,8 @@ public class InvalidObjectSupplier<U> implements ArbitrarySupplier<U> {
                 var itemSchema = validArbitrarySupplier.getRef(propertySchema.getItems().get$ref());
                 var itemArbitrary = getPropertyArbitrary(propertyName, itemSchema);
                 var supplier = Objects.requireNonNullElse(propertySchema.getUniqueItems(), false) ?
-                        new UniqueItemsArraySupplier(itemSchema, itemArbitrary) :
-                        new ArraySupplier(itemSchema, itemArbitrary);
+                        new UniqueItemsArraySupplier(propertySchema, itemArbitrary) :
+                        new ArraySupplier(propertySchema, itemArbitrary);
                 yield supplier.get();
             }
             case String s when propertySchema.getEnum() != null -> {
