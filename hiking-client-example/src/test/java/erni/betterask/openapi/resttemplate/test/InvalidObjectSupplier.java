@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 
 public class InvalidObjectSupplier<U> implements ArbitrarySupplier<U> {
 
-    private final OpenApiArbitrarySupplier<?> openApiArbitrarySupplier;
+    private final InvalidArbitrarySupplier<?> validArbitrarySupplier;
     private final Schema<?> schema;
     private final Class<U> modelClass;
     private final Class<?> builderClass;
@@ -27,10 +27,10 @@ public class InvalidObjectSupplier<U> implements ArbitrarySupplier<U> {
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public InvalidObjectSupplier(OpenApiArbitrarySupplier<?> openApiArbitrarySupplier, Schema<?> schema) {
-        this.openApiArbitrarySupplier = openApiArbitrarySupplier;
+    public InvalidObjectSupplier(InvalidArbitrarySupplier<?> validArbitrarySupplier, Schema<?> schema) {
+        this.validArbitrarySupplier = validArbitrarySupplier;
         this.schema = schema;
-        this.modelClass = (Class<U>) Class.forName(openApiArbitrarySupplier.modelClass.getPackageName() + "." + schema.getTitle());
+        this.modelClass = (Class<U>) Class.forName(validArbitrarySupplier.modelClass.getPackageName() + "." + schema.getTitle());
         this.builderClass = Class.forName(modelClass.getName() + "$Builder");
         builderSupplier = new Supplier<>() {
             @Override
@@ -110,10 +110,10 @@ public class InvalidObjectSupplier<U> implements ArbitrarySupplier<U> {
     private Arbitrary<?> getPropertyArbitrary(String propertyName, Schema<?> propertySchema) {
         return switch (propertySchema.getType()) {
             case "object" -> {
-                yield new InvalidObjectSupplier<>(openApiArbitrarySupplier, propertySchema).get();
+                yield new InvalidObjectSupplier<>(validArbitrarySupplier, propertySchema).get();
             }
             case "array" -> {
-                var itemSchema = openApiArbitrarySupplier.getRef(propertySchema.getItems().get$ref());
+                var itemSchema = validArbitrarySupplier.getRef(propertySchema.getItems().get$ref());
                 var itemArbitrary = getPropertyArbitrary(propertyName, itemSchema);
                 var supplier = Objects.requireNonNullElse(propertySchema.getUniqueItems(), false) ?
                         new UniqueItemsArraySupplier(itemSchema, itemArbitrary) :
@@ -129,7 +129,7 @@ public class InvalidObjectSupplier<U> implements ArbitrarySupplier<U> {
             case null, default -> {
                 if (propertySchema.get$ref() != null) {
                     System.out.println("$ref: " + propertySchema.get$ref());
-                    yield new InvalidObjectSupplier<>(openApiArbitrarySupplier, openApiArbitrarySupplier.getRef(propertySchema.get$ref())).get();
+                    yield new InvalidObjectSupplier<>(validArbitrarySupplier, validArbitrarySupplier.getRef(propertySchema.get$ref())).get();
                 }
                 throw new IllegalStateException("Unexpected value: " + propertySchema.getType());
             }
@@ -149,7 +149,7 @@ public class InvalidObjectSupplier<U> implements ArbitrarySupplier<U> {
             case null, default -> {
                 if (propertySchema.get$ref() != null) {
                     System.out.println("$ref: " + propertySchema.get$ref());
-                    yield getObjectWith(propertyName, openApiArbitrarySupplier.getRef(propertySchema.get$ref()).getTitle());
+                    yield getObjectWith(propertyName, validArbitrarySupplier.getRef(propertySchema.get$ref()).getTitle());
                 }
                 throw new IllegalStateException("Unexpected value: " + propertySchema.getType());
             }

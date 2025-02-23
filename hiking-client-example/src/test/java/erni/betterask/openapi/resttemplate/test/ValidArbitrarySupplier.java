@@ -9,13 +9,13 @@ import net.jqwik.api.ArbitrarySupplier;
 import static erni.betterask.openapi.resttemplate.test.OpenApiHelper.parseOpenApi;
 import static io.swagger.v3.oas.models.Components.COMPONENTS_SCHEMAS_REF;
 
-public class OpenApiArbitrarySupplier<T> implements ArbitrarySupplier<T> {
+public class ValidArbitrarySupplier<T> implements ArbitrarySupplier<T> {
 
     private final OpenAPI openAPI;
     final Class<T> modelClass;
 
     @SneakyThrows
-    public OpenApiArbitrarySupplier(String openApiSpec, Class<T> modelClass) {
+    public ValidArbitrarySupplier(String openApiSpec, Class<T> modelClass) {
         openAPI = parseOpenApi(openApiSpec);
         this.modelClass = modelClass;
     }

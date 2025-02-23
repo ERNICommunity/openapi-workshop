@@ -4,7 +4,8 @@ package {{package}};
 {{#imports}}import {{import}};
 {{/imports}}
 import erni.betterask.openapi.resttemplate.test.OpenApiValidator;
-import erni.betterask.openapi.resttemplate.test.OpenApiArbitrarySupplier;
+import erni.betterask.openapi.resttemplate.test.ValidArbitrarySupplier;
+import erni.betterask.openapi.resttemplate.test.InvalidArbitrarySupplier;
 
 import net.jqwik.api.*;
 import net.jqwik.api.lifecycle.AfterProperty;
@@ -35,7 +36,7 @@ class {{classname}}Test {
     public static class Valid{{classname}}ArbitrarySupplier implements ArbitrarySupplier<{{classname}}> {
         @Override
         public Arbitrary<{{classname}}> get() {
-            return new OpenApiArbitrarySupplier<>(
+            return new ValidArbitrarySupplier<>(
                 "target/generated-sources/openapi/api/openapi.yaml", {{classname}}.class
             )
             .get();
@@ -45,7 +46,7 @@ class {{classname}}Test {
     public static class Invalid{{classname}}ArbitrarySupplier implements ArbitrarySupplier<{{classname}}> {
         @Override
         public Arbitrary<{{classname}}> get() {
-            return new OpenApiArbitrarySupplier<>(
+            return new InvalidArbitrarySupplier<>(
                 "target/generated-sources/openapi/api/openapi.yaml", {{classname}}.class
             )
             .get();
