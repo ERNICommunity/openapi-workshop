@@ -2,6 +2,7 @@ package erni.betterask.openapi.resttemplate.test.datatype;
 
 import erni.betterask.openapi.resttemplate.test.BuilderHelper;
 import erni.betterask.openapi.resttemplate.test.OpenApiModel;
+import erni.betterask.openapi.resttemplate.test.ValueGenerationMode;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.SneakyThrows;
 import net.jqwik.api.Arbitraries;
@@ -19,13 +20,15 @@ import java.util.function.Predicate;
 public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
 
     private final OpenApiModel openApiModel;
+    private final ValueGenerationMode valueGenerationMode;
     private final Schema<?> schema;
     private final Class<?> modelClass;
     private final BuilderHelper<T> builderHelper;
 
     @SneakyThrows
-    public ObjectSupplier(OpenApiModel openApiModel, String modelName) {
+    public ObjectSupplier(OpenApiModel openApiModel, String modelName, ValueGenerationMode valueGenerationMode) {
         this.openApiModel = openApiModel;
+        this.valueGenerationMode = valueGenerationMode;
         this.schema = openApiModel.getSchema(modelName);
         this.modelClass = openApiModel.getModelClass(modelName);
         this.builderHelper = new BuilderHelper<>(this.modelClass);
@@ -90,7 +93,7 @@ public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
                     //              Could not resolve type id 'HIKING_SEGMENT' as a subtype of `erni.betterask.hiking.client.model.TourSegment`:
                     //              Class `erni.betterask.hiking.client.model.HikingSegment` not subtype of `erni.betterask.hiking.client.model.TourSegment`
 //                    .filter(sts -> !(schema.getTitle().equals("TourSegment") && sts.getTitle().equals("HikingSegment")))
-                    .map(subtypeSchema -> new ObjectSupplier<T>(openApiModel, subtypeSchema.getTitle()).get())
+                    .map(subtypeSchema -> new ObjectSupplier<T>(openApiModel, subtypeSchema.getTitle(), valueGenerationMode).get())
                     .forEach(allSubtypeArbitraries::add);
         }
 
@@ -128,7 +131,7 @@ public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
     private Arbitrary<?> getPropertyArbitrary(String propertyName, Schema<?> propertySchema) {
         return switch (propertySchema.getType()) {
             case "object" -> {
-                yield new ObjectSupplier<>(openApiModel, propertySchema.getTitle()).get();
+                yield new ObjectSupplier<>(openApiModel, propertySchema.getTitle(), valueGenerationMode).get();
             }
             case "array" -> {
                 var itemSchema = openApiModel.getRef(propertySchema.getItems().get$ref());
@@ -147,7 +150,7 @@ public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
             case null, default -> {
                 if (propertySchema.get$ref() != null) {
                     System.out.println("$ref: " + propertySchema.get$ref());
-                    yield new ObjectSupplier<>(openApiModel, openApiModel.getRef(propertySchema.get$ref()).getTitle()).get();
+                    yield new ObjectSupplier<>(openApiModel, openApiModel.getRef(propertySchema.get$ref()).getTitle(), valueGenerationMode).get();
                 }
                 throw new IllegalStateException("Unexpected value: " + propertySchema.getType());
             }
