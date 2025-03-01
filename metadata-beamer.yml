@@ -1,0 +1,87 @@
+---
+documentclass: beamer
+classoption: table
+title: Property Based API Testing
+subtitle: Applying Property Based Testing to OpenApi
+author: BRJO
+date: \today
+version: 1.0.0-SNAPSHOT
+lang: en-US
+papersize: a4
+titlepage: true
+fontfamily: "DejaVu Sans"
+#fontfamilyoptions: sfdefault
+fontsize: 11pt
+# code-block-font-size: \tiny
+theme: "Frankfurt"
+colortheme: "beaver"
+fonttheme: "professionalfonts"
+mainfont: "DejaVu Sans"
+aspectratio: 169
+toc: true
+toc-depth: 5
+lof: false
+indent: false
+numbersections: true
+secnumdepth: 5
+url: hyphens
+breakurl: hyphenurls
+colorlinks: true
+toccolor: orange
+urlcolor: blue
+linkcolor: brown
+output: beamer_presentation
+bibliography:
+  - bib/isos.bib
+  - bib/rfcs.bib
+  - bib/w3cs.bib
+citation-style: https://www.zotero.org/styles/ieee-transactions-on-software-engineering
+# https://www.zotero.org/styles/transactions-on-programming-languages-and-systems
+citation-method: biblatex
+# nocite: |
+#   @rfc4180
+link-citations: true
+link-references: true
+reference-links: true
+biblatexoptions:
+- url=true
+- doi=true
+- backref=true
+- backrefstyle=three+
+hyperrefoptions:
+- backref=page
+- linktoc=all
+- pdfwindowui
+- pdfpagemode=FullScreen
+header-includes:
+  - |
+    ```{=latex}
+    \usepackage{datetime}
+    \usepackage[binary-units=true]{siunitx}
+    \usepackage[toc,section=chapter,acronym]{glossaries}
+    \usepackage{parskip}
+    \usepackage{rotating}
+    \usepackage[font=small,labelfont=bf,figurename=Abbildung]{caption}
+    \DeclareHookRule{begindocument/end}{beamer}{after}{polyglossia}
+    %\usepackage[dvipsnames,svgnames,x11names,table]{xcolor}
+    %\usepackage{caption}
+    %\captionsetup[figure]{labelformat=empty}
+    %\renewcommand*\familydefault{\sfdefault}
+    ```
+include-before:
+  - |
+    ```{=latex}
+    \cleardoublepage %\fontseries{sbc}\selectfont
+    \RedeclareSectionCommand[
+      afterskip=1.5ex plus .2ex,
+      beforeskip=-3.25ex plus -1ex minus -.2ex
+    ]{paragraph}
+    \setcounter{secnumdepth}{\paragraphnumdepth}
+    \setcounter{tocdepth}{\paragraphtocdepth}
+    ```
+include-after:
+  - |
+    ```{=latex}
+    \cleardoublepage
+    ```
+---

@@ -16,5 +16,5 @@ Preparation for the EDD workshop
 
 
 ```
-pandoc -s --pdf-engine=xelatex -f markdown -t beamer --slide-level=2 -o slides.pdf metadata-beamer.yml $< ${PANDOC_FILTER_PARMS} --highlight-style=haddock --citeproc
+pandoc -s --pdf-engine=xelatex -f markdown -t beamer --slide-level=2 -o pbat-slides.pdf metadata-beamer.yml pbat-slides.md --filter=pandoc-crossref --highlight-style=haddock --citeproc
 ```
