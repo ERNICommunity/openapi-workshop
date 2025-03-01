@@ -1,7 +1,7 @@
 package erni.betterask.openapi.resttemplate.test.datatype;
 
 import erni.betterask.openapi.resttemplate.test.BuilderHelper;
-import erni.betterask.openapi.resttemplate.test.OpenApi;
+import erni.betterask.openapi.resttemplate.test.OpenApiModel;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.SneakyThrows;
 import net.jqwik.api.Arbitraries;
@@ -18,18 +18,56 @@ import java.util.function.Predicate;
 
 public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
 
-    private final OpenApi openApi;
+    private final OpenApiModel openApiModel;
     private final Schema<?> schema;
     private final Class<?> modelClass;
     private final BuilderHelper<T> builderHelper;
 
     @SneakyThrows
-    public ObjectSupplier(OpenApi openApi, String modelName) {
-        this.openApi = openApi;
-        this.schema = openApi.getSchema(modelName);
-        this.modelClass = openApi.getModelClass(modelName);
+    public ObjectSupplier(OpenApiModel openApiModel, String modelName) {
+        this.openApiModel = openApiModel;
+        this.schema = openApiModel.getSchema(modelName);
+        this.modelClass = openApiModel.getModelClass(modelName);
         this.builderHelper = new BuilderHelper<>(this.modelClass);
     }
+
+    class A {}
+    class B extends A {}
+//    class C extends B {}
+
+    private boolean isBaseClass() {
+        if (this.schema.getAllOf() != null) {
+
+            if (schema.getAllOf().get(0).getName().equals(schema.getName())) {
+
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isValid() {
+        return true;
+    }
+
+
+    /**
+     * Prädikat Klassen
+     *
+     * isBaseClass
+     * hasDiscriminator
+     * isSubclass
+     *
+     * Fall, wenn isBaseClass() und hasDiscriminator()
+     *  --> Model ist eine Route Klasse eines algebraischen Datentype ---> isInvalid Supplier instanziieren
+     *
+     * Valid Supplier: isBaseClass() und hasDiscriminator() ausfiltern
+     *
+     * sprich, supplier = isBaseClass() && hasDiscriminator() ? invalidSupplier : validSupplier
+     *
+     * -> und vice-versa beim invalid supplier
+     *
+     */
 
     @Override
     public Arbitrary<T> get() {
@@ -37,9 +75,10 @@ public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
         Set<Arbitrary<T>> allSubtypeArbitraries = new HashSet<>();
 
         // process all strict subtypes, excluding self
-        if (openApi.getDiscriminatorProperty(schema).isPresent()) {
-            openApi.getSubTypes(schema).stream()
+        if (openApiModel.getDiscriminatorProperty(schema).isPresent()) {
+            openApiModel.getSubTypes(schema).stream()
                     .filter(Predicate.not(schema::equals))
+
                     // FIXME: grundlegendes API Design- bzw. Implementations-Problem
                     //        -> Serialisierung-Identity Test bricht, wenn man den Filter raus nimmt,
                     //           weil beim "TourSegment" Discriminator Mapping, Zeile 149 im api.yml, "HikingSegment"
@@ -50,18 +89,18 @@ public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
                     //              com.fasterxml.jackson.databind.exc.InvalidTypeIdException:
                     //              Could not resolve type id 'HIKING_SEGMENT' as a subtype of `erni.betterask.hiking.client.model.TourSegment`:
                     //              Class `erni.betterask.hiking.client.model.HikingSegment` not subtype of `erni.betterask.hiking.client.model.TourSegment`
-                    .filter(sts -> !(schema.getTitle().equals("TourSegment") && sts.getTitle().equals("HikingSegment")))
-                    .map(subtypeSchema -> new ObjectSupplier<T>(openApi, subtypeSchema.getTitle()).get())
+//                    .filter(sts -> !(schema.getTitle().equals("TourSegment") && sts.getTitle().equals("HikingSegment")))
+                    .map(subtypeSchema -> new ObjectSupplier<T>(openApiModel, subtypeSchema.getTitle()).get())
                     .forEach(allSubtypeArbitraries::add);
         }
 
         // process self, if simple type or included in discriminator mapping
-        if (openApi.getDiscriminatorProperty(schema).isEmpty()
-                || openApi.getDiscriminatorProperty(schema).isPresent() && openApi.getSubTypes(schema).contains(schema)) {
+        if (openApiModel.getDiscriminatorProperty(schema).isEmpty()
+                || openApiModel.getDiscriminatorProperty(schema).isPresent() && openApiModel.getSubTypes(schema).contains(schema)) {
 
             Builders.BuilderCombinator<Object> builderCombinator = Builders.withBuilder(builderHelper.getBuilderSupplier());
 
-            builderCombinator = openApi.getAllProperties(schema).entrySet().stream().reduce(
+            builderCombinator = openApiModel.getAllProperties(schema).entrySet().stream().reduce(
                     builderCombinator,
                     (bc, entry) -> {
                         String propertyName = entry.getKey();
@@ -89,10 +128,10 @@ public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
     private Arbitrary<?> getPropertyArbitrary(String propertyName, Schema<?> propertySchema) {
         return switch (propertySchema.getType()) {
             case "object" -> {
-                yield new ObjectSupplier<>(openApi, propertySchema.getTitle()).get();
+                yield new ObjectSupplier<>(openApiModel, propertySchema.getTitle()).get();
             }
             case "array" -> {
-                var itemSchema = openApi.getRef(propertySchema.getItems().get$ref());
+                var itemSchema = openApiModel.getRef(propertySchema.getItems().get$ref());
                 var itemArbitrary = getPropertyArbitrary(propertyName, itemSchema);
                 var supplier = Objects.requireNonNullElse(propertySchema.getUniqueItems(), false) ?
                         new ArrayAsSetSupplier(propertySchema, itemArbitrary) :
@@ -108,7 +147,7 @@ public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
             case null, default -> {
                 if (propertySchema.get$ref() != null) {
                     System.out.println("$ref: " + propertySchema.get$ref());
-                    yield new ObjectSupplier<>(openApi, openApi.getRef(propertySchema.get$ref()).getTitle()).get();
+                    yield new ObjectSupplier<>(openApiModel, openApiModel.getRef(propertySchema.get$ref()).getTitle()).get();
                 }
                 throw new IllegalStateException("Unexpected value: " + propertySchema.getType());
             }
@@ -128,7 +167,7 @@ public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
             case null, default -> {
                 if (propertySchema.get$ref() != null) {
                     System.out.println("$ref: " + propertySchema.get$ref());
-                    yield builderHelper.getObjectWith(propertyName, openApi.getRef(propertySchema.get$ref()).getTitle());
+                    yield builderHelper.getObjectWith(propertyName, openApiModel.getRef(propertySchema.get$ref()).getTitle());
                 }
                 throw new IllegalStateException("Unexpected value: " + propertySchema.getType());
             }

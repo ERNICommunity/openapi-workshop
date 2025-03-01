@@ -78,30 +78,30 @@ components:
           minItems: 1
           maxItems: 99
           x-jqwik-max-items: 9
-        tourSegments:
-          description: "The hiking and climbing segments for this route."
-          type: array
-          items:
-            $ref: '#/components/schemas/TourSegment'
-          uniqueItems: false
-          minItems: 1
-          maxItems: 99
-          x-jqwik-max-items: 9
+#        tourSegments:
+#          description: "The hiking and climbing segments for this route."
+#          type: array
+#          items:
+#            $ref: '#/components/schemas/TourSegment'
+#          uniqueItems: false
+#          minItems: 1
+#          maxItems: 99
+#          x-jqwik-max-items: 9
         mostDifficultRouteSegment:
           $ref: '#/components/schemas/RouteSegment'
-        photos:
-          description: "Some photos of the route (if available)."
-          type: array
-          items:
-            $ref: '#/components/schemas/Photo'
-          minItems: 0
-          maxItems: 99
-          x-jqwik-max-items: 9
+#        photos:
+#          description: "Some photos of the route (if available)."
+#          type: array
+#          items:
+#            $ref: '#/components/schemas/Photo'
+#          minItems: 0
+#          maxItems: 99
+#          x-jqwik-max-items: 9
       required:
         - name
         - routeSegments
         - tourSegments
-        - photos
+#        - photos
       additionalProperties: false
     RouteSegment:
       title: RouteSegment
@@ -139,42 +139,42 @@ components:
         - discriminator
         - from
         - to
-    TourSegment:
-      title: TourSegment
-      description: "A route segment for climbing activities, i.e. either a climbing or a hiking segment."
-      type: object
-      discriminator:
-        propertyName: discriminator
-        mapping:
-          HIKING_SEGMENT: '#/components/schemas/HikingSegment'
-          CLIMBING_SEGMENT: '#/components/schemas/ClimbingSegment'
-      properties:
-        discriminator:
-          description: "Distinguishes between climbing and hiking segments."
-          type: string
-          enum:
-            - HIKING_SEGMENT
-            - CLIMBING_SEGMENT
-          readOnly: true
-        from:
-          description: "Starting point where the route segment begins."
-          type: string
-          minLength: 1
-          maxLength: 255
-        to:
-          description: "End point of the route segment."
-          type: string
-          minLength: 1
-          maxLength: 255
-        duration:
-          description: "Estimated duration in minutes the segment requires to take."
-          type: integer
-          minimum: 0
-          maximum: 1440 # 1 day
-      required:
-        - discriminator
-        - from
-        - to
+#    TourSegment:
+#      title: TourSegment
+#      description: "A route segment for climbing activities, i.e. either a climbing or a hiking segment."
+#      type: object
+#      discriminator:
+#        propertyName: discriminator
+#        mapping:
+#          HIKING_SEGMENT: '#/components/schemas/HikingSegment'
+#          CLIMBING_SEGMENT: '#/components/schemas/ClimbingSegment'
+#      properties:
+#        discriminator:
+#          description: "Distinguishes between climbing and hiking segments."
+#          type: string
+#          enum:
+#            - HIKING_SEGMENT
+#            - CLIMBING_SEGMENT
+#          readOnly: true
+#        from:
+#          description: "Starting point where the route segment begins."
+#          type: string
+#          minLength: 1
+#          maxLength: 255
+#        to:
+#          description: "End point of the route segment."
+#          type: string
+#          minLength: 1
+#          maxLength: 255
+#        duration:
+#          description: "Estimated duration in minutes the segment requires to take."
+#          type: integer
+#          minimum: 0
+#          maximum: 1440 # 1 day
+#      required:
+#        - discriminator
+#        - from
+#        - to
     HikingSegment:
       title: HikingSegment
       description: "A hiking segment as part of a route."
@@ -189,13 +189,13 @@ components:
       allOf:
         - $ref: '#/components/schemas/RouteSegment'
         - $ref: '#/components/schemas/MountainRideSegmentDetails'
-    ClimbingSegment:
-      title: ClimbingSegment
-      description: "A climbing segment as part of a route."
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/TourSegment'
-        - $ref: '#/components/schemas/ClimbingSegmentDetails'
+#    ClimbingSegment:
+#      title: ClimbingSegment
+#      description: "A climbing segment as part of a route."
+#      type: object
+#      allOf:
+#        - $ref: '#/components/schemas/TourSegment'
+#        - $ref: '#/components/schemas/ClimbingSegmentDetails'
     ClimbingSegmentDetails:
       title: ClimbingSegmentDetails
       description: "Details specific to a climbing segment of a route."
@@ -249,9 +249,9 @@ components:
           # further properties here
       required:
         - costs
-    Photo:
-      description: "Binary string type for photographies."
-      type: string
-      format: binary
-      minLength: 1
-      maxLength: 3145728 # 3 MB
+#    Photo:
+#      description: "Binary string type for photographies."
+#      type: string
+#      format: binary
+#      minLength: 1
+#      maxLength: 3145728 # 3 MB

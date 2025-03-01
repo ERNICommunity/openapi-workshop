@@ -11,12 +11,12 @@ import java.util.stream.Collectors;
 
 import static io.swagger.v3.oas.models.Components.COMPONENTS_SCHEMAS_REF;
 
-public class OpenApi {
+public class OpenApiModel {
 
     private final OpenAPI openApi;
     private final String packageName;
 
-    public OpenApi(String openApiSpec, String packageName) {
+    public OpenApiModel(String openApiSpec, String packageName) {
         openApi = new OpenAPIParser().readLocation(openApiSpec, null, null).getOpenAPI();
         this.packageName = packageName;
     }
@@ -61,6 +61,13 @@ public class OpenApi {
         }
         return Collections.emptyMap();
     }
+
+    private boolean isPrimitive(Schema<?> schema) {
+
+        return true;
+    }
+
+
 
     private Map<String, Schema<?>> getProperties(Schema<?> schema) {
         var map = new HashMap<>(Objects.requireNonNullElseGet(getProperProperties(schema), Collections::emptyMap));

@@ -72,6 +72,10 @@ class {{classname}}Test {
         assertThat(result).isTrue();
     }
 
+            {{^vendorExtensions.x-is-one-of-interface}}
+            {{#discriminator}}
+            {{^parent}}
+
     @Disabled("TODO")
     @Property
             {{#vendorExtensions.x-jqwik-property-attributes}}
@@ -81,6 +85,10 @@ class {{classname}}Test {
         boolean result = VALIDATOR.validate(value);
         assertThat(result).isFalse();
     }
+
+            {{/parent}}
+            {{/discriminator}}
+            {{/vendorExtensions.x-is-one-of-interface}}
 
     @Property
             {{#vendorExtensions.x-jqwik-property-attributes}}

@@ -10,7 +10,7 @@ public class InvalidArbitrarySupplier<T> implements ArbitrarySupplier<T> {
 
     @SneakyThrows
     public InvalidArbitrarySupplier(String openApiSpec, Class<T> modelClass) {
-        var openApi = new OpenApi(openApiSpec, modelClass.getPackageName());
+        var openApi = new OpenApiModel(openApiSpec, modelClass.getPackageName());
         // TODO: implementation
         invalidObjectSupplier = null;
     }

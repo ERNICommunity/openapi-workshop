@@ -11,12 +11,13 @@ public class ValidArbitrarySupplier<T> implements ArbitrarySupplier<T> {
 
     @SneakyThrows
     public ValidArbitrarySupplier(String openApiSpec, Class<T> modelClass) {
-        var openApi = new OpenApi(openApiSpec, modelClass.getPackageName());
+        var openApi = new OpenApiModel(openApiSpec, modelClass.getPackageName());
         validObjectSupplier = new ObjectSupplier<T>(openApi, modelClass.getSimpleName());
     }
 
     @Override
     public Arbitrary<T> get() {
+
         return validObjectSupplier.get();
     }
 }
