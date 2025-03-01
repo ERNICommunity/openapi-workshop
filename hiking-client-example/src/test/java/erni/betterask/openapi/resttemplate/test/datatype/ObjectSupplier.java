@@ -81,18 +81,6 @@ public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
         if (openApiModel.getDiscriminatorProperty(schema).isPresent()) {
             openApiModel.getSubTypes(schema).stream()
                     .filter(Predicate.not(schema::equals))
-
-                    // FIXME: grundlegendes API Design- bzw. Implementations-Problem
-                    //        -> Serialisierung-Identity Test bricht, wenn man den Filter raus nimmt,
-                    //           weil beim "TourSegment" Discriminator Mapping, Zeile 149 im api.yml, "HikingSegment"
-                    //           zugelassen ist, obwohl "HikingSegment" kein "TourSegment" sein _kann_ weil es schon, siehe
-                    //           Zeile 183, schon "allOf" "RouteSegment" hat und somit ein "RouteSegment" ist,
-                    //           und Java keine Mehrfach-Klassenvererbung zulässt.
-                    //        -> Der Fehler ist:
-                    //              com.fasterxml.jackson.databind.exc.InvalidTypeIdException:
-                    //              Could not resolve type id 'HIKING_SEGMENT' as a subtype of `erni.betterask.hiking.client.model.TourSegment`:
-                    //              Class `erni.betterask.hiking.client.model.HikingSegment` not subtype of `erni.betterask.hiking.client.model.TourSegment`
-//                    .filter(sts -> !(schema.getTitle().equals("TourSegment") && sts.getTitle().equals("HikingSegment")))
                     .map(subtypeSchema -> new ObjectSupplier<T>(openApiModel, subtypeSchema.getTitle(), valueGenerationMode).get())
                     .forEach(allSubtypeArbitraries::add);
         }
