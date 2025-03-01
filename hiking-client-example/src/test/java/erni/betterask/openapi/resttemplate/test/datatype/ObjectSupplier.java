@@ -78,7 +78,7 @@ public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
         Set<Arbitrary<T>> allSubtypeArbitraries = new HashSet<>();
 
         // process all strict subtypes, excluding self
-        if (openApiModel.getDiscriminatorProperty(schema).isPresent()) {
+        if (openApiModel.getDiscriminatorProperty(schema).isPresent() && valueGenerationMode != ValueGenerationMode.INVALID_INSTANCES) {
             openApiModel.getSubTypes(schema).stream()
                     .filter(Predicate.not(schema::equals))
                     .map(subtypeSchema -> new ObjectSupplier<T>(openApiModel, subtypeSchema.getTitle(), valueGenerationMode).get())
@@ -87,7 +87,8 @@ public class ObjectSupplier<T> implements ArbitrarySupplier<T> {
 
         // process self, if simple type or included in discriminator mapping
         if (openApiModel.getDiscriminatorProperty(schema).isEmpty()
-                || openApiModel.getDiscriminatorProperty(schema).isPresent() && openApiModel.getSubTypes(schema).contains(schema)) {
+                || openApiModel.getDiscriminatorProperty(schema).isPresent()
+                && (openApiModel.getSubTypes(schema).contains(schema) || valueGenerationMode == ValueGenerationMode.INVALID_INSTANCES)) {
 
             Builders.BuilderCombinator<Object> builderCombinator = Builders.withBuilder(builderHelper.getBuilderSupplier());
 
