@@ -100,7 +100,7 @@ components:
       required:
         - name
         - routeSegments
-        - tourSegments
+#        - tourSegments
 #        - photos
       additionalProperties: false
     RouteSegment:
