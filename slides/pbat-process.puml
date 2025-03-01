@@ -1,0 +1,28 @@
+@startuml
+'!include style-process.puml
+actor "<b>user</b>" as user %lighten("Blue", 50)
+artifact "<b>api.yml</b>" as api #Gold
+user -r-> api : <<edit>>
+component "<b>openapi-generator</b>" as oagen #DeepSkyBlue
+api <-r- oagen : <<use>>
+artifact "<b>model.mustache</b>" as model_template  %lighten("DeepSkyBlue", 50)
+model_template <-d- oagen : <<include>>
+artifact "<b>ModelA.java</b>" as model %lighten("DeepSkyBlue", 50)
+oagen -u-> model : <<generate>>
+model_template -[hidden]r- model
+artifact "<b>model_test.mustache</b>" as test_template %lighten("Gold", 50)
+test_template <-u- oagen : <<include>>
+artifact "<b>ModelATest.java</b>" as test %lighten("Gold", 50)
+oagen -d-> test : <<generate>>
+
+component "jqwik" as jqwik #HotPink
+model <- jqwik : <<use>>
+test <-u- jqwik : <<execute>>
+component "openapi4j" as openapi4j #GreenYellow
+'model --d-> test : <<include>>
+oagen ..r.. jqwik
+jqwik .r. openapi4j
+model <-d- openapi4j : <<validate>>
+test -u-> openapi4j : <<apply>>
+user .> test_template : <<provide>>
+@enduml

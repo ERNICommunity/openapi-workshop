@@ -1,0 +1,42 @@
+@startuml
+hide empty methods
+hide empty fields
+
+class "Route" {
+  {field} name : string
+}
+
+class "RouteSegment" {
+  {field} <b><font color="Orange">discriminator : string</font></b>
+  {field} from : string
+  {field} to : string
+  {field} duration : integer
+}
+
+class HikingSegment #Orange {
+}
+
+class MountainRideSegment #Orange {
+}
+
+class "HikingSegmentDetails" #Orange {
+  {field} length : integer
+  {field} difficulty : string
+}
+
+class "MountainRideSegmentDetails" #Orange {
+  {field} costs : integer
+}
+
+"Route" --> "*" "RouteSegment"  :  "routeSegments"
+
+"HikingSegment" --> "1" "RouteSegment"
+
+"HikingSegment" --> "1" "HikingSegmentDetails"
+
+"MountainRideSegment" --> "1" "RouteSegment"
+
+
+"MountainRideSegment" --> "1" "MountainRideSegmentDetails"
+
+@enduml

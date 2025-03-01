@@ -1,0 +1,20 @@
+@startuml
+hide empty methods
+hide empty fields
+
+class "Route" {
+  {field} name : string
+}
+
+class "RouteSegment" {
+  {field} from : string
+  {field} to : string
+  <font color="orange">{field} duration : integer
+  <font color="orange">{field} length : integer
+  <font color="orange">{field} difficulty : string[0..1]
+  <font color="orange">{field} costs : integer[0..1]
+}
+
+"Route" --> "*" "RouteSegment"  :  "routeSegments"
+
+@enduml

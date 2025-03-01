@@ -1,0 +1,31 @@
+@startuml
+
+hide empty methods
+hide empty fields
+
+class "<b>Route</b>" {
+  {field} name : string
+}
+
+abstract class "RouteSegment" {
+  {field} from : string
+  {field} to : string
+  {field} duration : integer
+}
+
+class "HikingSegment" {
+  {field} length : integer
+  {field} difficulty : string
+}
+
+class "MountainRideSegment" {
+  {field} costs : integer
+}
+
+"<b>Route</b>" o-- "*" "RouteSegment"  :  "routeSegments"
+
+"HikingSegment" -u-|> "RouteSegment"
+"MountainRideSegment" -u-|> "RouteSegment"
+
+
+@enduml

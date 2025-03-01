@@ -32,6 +32,8 @@
         <openapi4j.version>1.0.7</openapi4j.version>
         <jqwik.version>1.9.2</jqwik.version>
         <hamcrest.version>2.2</hamcrest.version>
+
+        <apiSpec>${project.build.directory}/hiking-openapi-spec/openapi/api.yml</apiSpec>
     </properties>
 
     <dependencyManagement>
@@ -221,7 +223,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.build.directory}/hiking-openapi-spec/openapi/api.yml</inputSpec>
+                            <inputSpec>${apiSpec}</inputSpec>
                             <generatorName>java</generatorName>
                             <library>resttemplate</library>
                             <templateResourcePath>${project.basedir}/src/main/resources/templates/openapi</templateResourcePath>
