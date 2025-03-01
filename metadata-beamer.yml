@@ -3,7 +3,7 @@ documentclass: beamer
 classoption: table
 title: Property Based API Testing
 subtitle: Applying Property Based Testing to OpenApi
-author: BRJO
+author: BRJO, PFPA
 date: \today
 version: 1.0.0-SNAPSHOT
 lang: en-US
