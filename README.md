@@ -33,6 +33,13 @@ Komplexe Erweiterung der Api SPEC mit dem Sicherheitsnetz durch die Moustache ge
 
 
 
-```
+PlantUML-Diagramme bauen:
+
+- `{.shell} plantuml -tpng puml/*.puml`
+
+
+```{ .bash }
+cd slides
 pandoc -s --pdf-engine=xelatex -f markdown -t beamer --slide-level=2 -o pbat-slides.pdf metadata-beamer.yml pbat-slides.md --filter=pandoc-crossref --highlight-style=haddock --citeproc
+cd -
 ```

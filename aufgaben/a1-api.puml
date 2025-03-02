@@ -1,6 +1,7 @@
 @startuml
 hide empty methods
 hide empty fields
+scale 2048 height
 
 class "Route" {
   {field} name : string

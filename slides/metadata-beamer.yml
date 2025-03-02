@@ -2,17 +2,19 @@
 documentclass: beamer
 classoption: table
 title: Property Based API Testing
-subtitle: Applying Property Based Testing to OpenApi
-author: BRJO, PFPA
-date: \today
+subtitle: EDD Workshop Session
+author:
+  - Patrick Pfeiffer
+  - Johannes Brügmann
+date: \formatdate{06}{03}{2025}
 version: 1.0.0-SNAPSHOT
 lang: en-US
 papersize: a4
 titlepage: true
 fontfamily: "DejaVu Sans"
 #fontfamilyoptions: sfdefault
-fontsize: 11pt
-# code-block-font-size: \tiny
+fontsize: 10pt
+code-block-font-size: \tiny
 theme: "Frankfurt"
 colortheme: "beaver"
 fonttheme: "professionalfonts"
