@@ -1,8 +1,8 @@
 # hiking-playground
 
-[![Build Badge]](https://github.com/johannes-bruegmann/hiking-playground/actions/workflows/maven.yml)
+[![Build Badge]](https://github.com/ERNICommunity/openapi-workshop/actions/workflows/maven.yml)
 
-[Build Badge]: https://github.com/johannes-bruegmann/hiking-playground/actions/workflows/maven.yml/badge.svg
+[Build Badge]: https://github.com/ERNICommunity/openapi-workshop/actions/workflows/maven.yml/badge.svg
 
 
 ## EDD Workshop Aufgaben
