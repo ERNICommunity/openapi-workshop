@@ -13,7 +13,7 @@ class "RouteSegment" {
   {field} duration : integer
   {field} length : integer
   {field} difficulty : string[0..1]
-  {field} costs : integer[0..1]
+  {field} cost : integer[0..1]
 }
 
 "<b>Route</b>" o-- "*" "RouteSegment"  :  "routeSegments"

@@ -19,7 +19,7 @@ class "HikingSegment" {
 }
 
 class "MountainRideSegment" {
-  {field} costs : integer
+  {field} cost : integer
 }
 
 "<b>Route</b>" o-- "*" "RouteSegment"  :  "routeSegments"

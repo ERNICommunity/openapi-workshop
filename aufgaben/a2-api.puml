@@ -25,7 +25,7 @@ class "HikingSegmentDetails" #Orange {
 }
 
 class "MountainRideSegmentDetails" #Orange {
-  {field} costs : integer
+  {field} cost : integer
 }
 
 "Route" --> "*" "RouteSegment"  :  "routeSegments"

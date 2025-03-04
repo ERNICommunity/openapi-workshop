@@ -12,7 +12,7 @@ class "RouteSegment" {
   <font color="orange">{field} duration : integer
   <font color="orange">{field} length : integer
   <font color="orange">{field} difficulty : string[0..1]
-  <font color="orange">{field} costs : integer[0..1]
+  <font color="orange">{field} cost : integer[0..1]
 }
 
 "Route" --> "*" "RouteSegment"  :  "routeSegments"

@@ -6,22 +6,39 @@
 - intended for REST and JSON RPC APIs with `JSON` or `XML` payloads
 - language independent API specification written in `JSON` or `YML`
 - plenty of generators and tools for individual language bindings
-- client and server stubs generation for models and api
+- client and server adapter generation for models and api
 
 ## OpenApi: Building Blocks
 
-- General info block (title, license, server, tags, ...)
+- General info block (title, license, info, server, tags, ...)
 - Operations (HTTP-verb + Path, request and responses, media-types)
 - Schemata (named and anonymous models, parameters)
 - Security (OAuth 2.0, HTTP BasicAuth, ...)
 
 ## OpenApi: Swagger Editor
 
-![Editieren von OpenApi-Dateien in Swagger Editor.](swagger-editor.png){ height=70% }
+[![Editieren von OpenApi-Dateien in Swagger Editor.](swagger-editor.png){ height=70% }](https://editor.swagger.io/)
+
+## Vorbereitung
+
+ERNICommunity GitHub Projekt auschecken: https://github.com/ERNICommunity/openapi-workshop
 
 ## A1: Modelliere in OpenAPI
 
 ![Klassendiagramm für das Modell "Route".](../target/pngs/aufgaben/a1-uml.png){ height=70% }
+
+## A1: Ausgangslage
+
+![Fehlende "Route".](../target/pngs/aufgaben/a1-api.png){ height=70% }
+
+## A1: 4 "Route"-Attribute hinzufügen
+
+- duration: integer
+- length: integer
+- difficulty: string[0..1]
+- cost: [0..1]
+
+## 
 
 # Property-Based-Testing Basics
 
@@ -31,21 +48,24 @@
 
 ## PBT: Basics
 
-$$ \forall s \in S: P(s) = \top, \qquad P: S \to \{ \top, \bot \} $$ {#eq:pbt-basics}
+$$ \forall i \in I: P(i) = \top, \qquad P: I \to \{ \top, \bot \} $$ {#eq:pbt-basics}
 
-- $S$: state space of valid instances
-- $P$: property to prove, candidates involve [-@bib:pbt:patterns]:
-  - invariants,
-  - round-trips,
-  - symmetry,
-  - commutativity,
-  - idem-potency, and 
+- $I$: domain of valid input values ("Eingabedomäne")
+- $P$: property to prove; candidates include:
+  - invariants
+  - round-trips
+  - symmetry
+  - commutativity
+  - idempotency
   - induction
+
+[-@bib:pbt:patterns]
 
 ## A2: Implementiere PBT `isValid()`
 
-- let `jqwik` generate arbitraries
-- validate any arbitraries with `openapi4j` 
+- using the Arbitraries class, write a `jqwik` "@Provider" 
+  function to define an "Arbitrary" that generates input data ("Testdatengenerator")
+- validate all inputs with `openapi4j`
 - use model `Route` from previous exercise
 
 # Applying PBT to OpenAPI /-Generator

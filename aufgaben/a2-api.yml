@@ -159,11 +159,11 @@ components:
       description: "Details specific to a mountain ride segment of a route."
       type: object
       properties:
-        costs:
-          description: "The costs for the mountain ride in cents."
+        cost:
+          description: "The cost for the mountain ride in cents."
           type: integer
           minimum: 10000
           maximum: 0
           # further properties here
       required:
-        - costs
+        - cost
