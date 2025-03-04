@@ -25,9 +25,22 @@
 
 # Property-Based-Testing Basics
 
+## PBT: General
+
+![Das Unit-Test Dilemma: "testing can  only find  bugs, not  prove  their absence" (E.W. Dijkstra).](PBT-cartoon.png){ height=70% }
+
 ## PBT: Basics
 
-$$ \exists P: S \to \{ \top, \bot \} \implies P(s) = \top, \forall s \in S $$ {#eq:pbt-basics}
+$$ \forall s \in S: P(s) = \top, \qquad P: S \to \{ \top, \bot \} $$ {#eq:pbt-basics}
+
+- $S$: state space of valid instances
+- $P$: property to prove, candidates involve [-@bib:pbt:patterns]:
+  - invariants,
+  - round-trips,
+  - symmetry,
+  - commutativity,
+  - idem-potency, and 
+  - induction
 
 # Applying PBT to OpenAPI /-Generator
 
