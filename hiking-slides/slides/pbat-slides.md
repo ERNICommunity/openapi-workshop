@@ -21,7 +21,7 @@
 
 ## A1: Modelliere in OpenAPI
 
-![Klassendiagramm für das Modell "Route".](../aufgaben/a1-uml.png){ height=70% }
+![Klassendiagramm für das Modell "Route".](../target/pngs/aufgaben/a1-uml.png){ height=70% }
 
 # Property-Based-Testing Basics
 
@@ -50,9 +50,12 @@ $$ \forall s \in S: P(s) = \top, \qquad P: S \to \{ \top, \bot \} $$ {#eq:pbt-ba
 
 # Applying PBT to OpenAPI /-Generator
 
+## Folie 3
 ## A3: Modelliere in OpenApi und prüfe mit PBT
 
-![Klassendiagramm für das polymorphe Modell "RouteSegment".](../aufgaben/a2-uml.png){ height=70% }
+![Klassendiagramm für das polymorphe Modell "RouteSegment".](../target/pngs/aufgaben/a2-uml.png){ height=70% }
+
+![Der Property-Based API-Testing Prozess](../target/pngs/slides/pbat-process.png){ height=70% }
 
 # Questions?
 

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>erni.betterask.hiking</groupId>
+    <artifactId>hiking-slides</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>23</maven.compiler.source>
+        <maven.compiler.target>23</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-slides</id>
+                        <phase>package</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>pandoc</executable>
+                            <workingDirectory>${project.basedir}/slides</workingDirectory>
+                            <commandlineArgs>
+                                -s --pdf-engine=xelatex -f markdown -t beamer --slide-level=2
+                                --filter=pandoc-crossref --citeproc
+                                --highlight-style=haddock
+                                -o pbat-slides.pdf
+                                metadata-beamer.yml pbat-slides.md
+                            </commandlineArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.davidmoten</groupId>
+                <artifactId>plantuml-maven-plugin</artifactId>
+                <version>0.2.13</version>
+                <configuration>
+                    <preserveDirectoryStructure>true</preserveDirectoryStructure>
+                    <outputDirectory>${project.build.directory}/pngs</outputDirectory>
+                    <formats>
+                        <format>png</format>
+                    </formats>
+                    <configs>
+                        <config>scale 5</config>
+                    </configs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-aufgaben-diagramme</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <sources>
+                                <directory>${project.basedir}/..</directory>
+                                <includes>
+                                    <include>aufgaben/**/*.puml</include>
+                                </includes>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-extra-diagramme</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <sources>
+                                <directory>${project.basedir}</directory>
+                                <includes>
+                                    <include>slides/**/*.puml</include>
+                                </includes>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

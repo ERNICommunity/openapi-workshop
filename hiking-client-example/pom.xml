@@ -8,13 +8,14 @@
         <artifactId>hiking-playground</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+
     <artifactId>hiking-client-example</artifactId>
-    <name>&gt; ${project.artifactId}</name>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <hiking-openapi-spec.version>1.0-SNAPSHOT</hiking-openapi-spec.version>
         <spring-boot.version>3.3.8</spring-boot.version>
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
@@ -28,7 +29,7 @@
         <junit-platform-runner.version>1.11.4</junit-platform-runner.version>
         <swagger-annotations.version>2.2.28</swagger-annotations.version>
         <swagger-parser.version>2.1.25</swagger-parser.version>
-        <hibernate-validator.version>5.4.1.Final</hibernate-validator.version>
+        <hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
         <openapi4j.version>1.0.7</openapi4j.version>
         <jqwik.version>1.9.2</jqwik.version>
         <hamcrest.version>2.2</hamcrest.version>
@@ -100,7 +101,7 @@
         </dependency>
         <!-- Bean Validation Impl. used to perform BeanValidation -->
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate-validator.version}</version>
         </dependency>

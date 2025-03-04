@@ -4,7 +4,7 @@ classoption: table
 title: Property Based API Testing
 subtitle: EDD Workshop Session
 author:
-  - Patrick Pfeiffer
+  - Patrick Pfeifer
   - Johannes Brügmann
 date: \formatdate{06}{03}{2025}
 version: 1.0.0-SNAPSHOT

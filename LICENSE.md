@@ -1,7 +1,7 @@
 Modified BSD License
 ====================
 
-_Copyright © `2025`, `Patrick Pfeiffer and Johannes Brügmann`_  
+_Copyright © `2025`, `Patrick Pfeifer and Johannes Brügmann`_  
 _All rights reserved._
 
 Redistribution and use in source and binary forms, with or without
