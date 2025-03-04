@@ -23,11 +23,11 @@ Hard-Codierter Test mit Openapi Validator (isValid Test) und Jackson Serialisier
 
 -----
 
-Einführung Moustache Template
+Einführung openapi-generator mit eigenem Moustache Template
 
-    <generateModelTests>true</generateModelTests>
+- Konfiguration openapi-generator-maven-plugin, mit `<generateModelTests>true</generateModelTests>`
 
-    [model_test.mustache](../hiking-client-example/src/main/resources/templates/openapi/model_test.mustache)
+- [model_test.mustache](../hiking-client-example/src/main/resources/templates/openapi/model_test.mustache) hinzufügen
 
 -----
 
