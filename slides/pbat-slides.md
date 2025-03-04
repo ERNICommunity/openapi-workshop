@@ -27,7 +27,7 @@
 
 ## PBT: General
 
-![Das Unit-Test Dilemma: "testing can  only find  bugs, not  prove  their absence" (E.W. Dijkstra).](PBT-cartoon.png){ height=70% }
+![Testing Dilemma: "testing can  only find  bugs, not  prove  their absence" (E.W. Dijkstra in [-@bib:godefroid:model-checking]).](PBT-cartoon.png){ height=70% }
 
 ## PBT: Basics
 
@@ -42,6 +42,18 @@ $$ \forall s \in S: P(s) = \top, \qquad P: S \to \{ \top, \bot \} $$ {#eq:pbt-ba
   - idem-potency, and 
   - induction
 
+## A2: Implementiere PBT `isValid()`
+
+- let `jqwik` generate arbitraries
+- validate any arbitraries with `openapi4j` 
+- use model `Route` from previous exercise
+
 # Applying PBT to OpenAPI /-Generator
 
-## Folie 3
+## A3: Modelliere in OpenApi und prüfe mit PBT
+
+![Klassendiagramm für das polymorphe Modell "RouteSegment".](../aufgaben/a2-uml.png){ height=70% }
+
+# Questions?
+
+## References
