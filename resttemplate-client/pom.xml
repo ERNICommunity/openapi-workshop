@@ -9,7 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>hiking-client-example</artifactId>
+    <artifactId>resttemplate-client</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -26,7 +26,6 @@
         <beanvalidation.version>3.1.1</beanvalidation.version>
         <jakarta-annotation.version>3.0.0</jakarta-annotation.version>
         <junit.version>5.11.4</junit.version>
-        <junit-platform-runner.version>1.11.4</junit-platform-runner.version>
         <swagger-annotations.version>2.2.28</swagger-annotations.version>
         <swagger-parser.version>2.1.25</swagger-parser.version>
         <hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
@@ -34,7 +33,7 @@
         <jqwik.version>1.9.2</jqwik.version>
         <hamcrest.version>2.2</hamcrest.version>
 
-        <apiSpec>${project.build.directory}/hiking-openapi-spec/openapi/api.yml</apiSpec>
+        <apiSpec>${project.parent.basedir}/loesungen/a3-openapi.yml</apiSpec>
     </properties>
 
     <dependencyManagement>
@@ -43,12 +42,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.junit</groupId>
-                <artifactId>junit-bom</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -128,7 +121,6 @@
             <artifactId>swagger-parser</artifactId>
             <version>${swagger-parser.version}</version>
         </dependency>
-    <!-- Test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -188,30 +180,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>install-openapi-spec</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>erni.betterask.hiking</groupId>
-                                    <artifactId>hiking-openapi-spec</artifactId>
-                                    <version>${hiking-openapi-spec.version}</version>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${project.build.directory}/hiking-openapi-spec</outputDirectory>
-                            <!-- stripVersion>true</stripVersion -->
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -300,11 +268,6 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.1</version>
             </plugin>
         </plugins>
     </build>

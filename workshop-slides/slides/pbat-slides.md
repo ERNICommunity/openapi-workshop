@@ -48,9 +48,9 @@ ERNICommunity GitHub Projekt auschecken: https://github.com/ERNICommunity/openap
 
 ## PBT: Basics
 
-$$ \forall i \in I: P(i) = \top, \qquad P: I \to \{ \top, \bot \} $$ {#eq:pbt-basics}
+$$ \forall i \in A: P(i) = \top, \qquad P: A \to \{ \top, \bot \} $$ {#eq:pbt-basics}
 
-- $I$: domain of valid input values ("Eingabedomäne")
+- $A$: domain of valid input values ("Eingabedomäne")
 - $P$: property to prove; candidates include:
   - invariants
   - round-trips
@@ -70,7 +70,6 @@ $$ \forall i \in I: P(i) = \top, \qquad P: I \to \{ \top, \bot \} $$ {#eq:pbt-ba
 
 # Applying PBT to OpenAPI /-Generator
 
-## Folie 3
 ## A3: Modelliere in OpenApi und prüfe mit PBT
 
 ![Klassendiagramm für das polymorphe Modell "RouteSegment".](../target/pngs/aufgaben/a2-uml.png){ height=70% }

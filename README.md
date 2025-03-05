@@ -11,15 +11,19 @@ Aufgabe 1:
 
 Ganz einfache OpenAPI Erweiterung
 
-- `mvn -DapiSpec=aufgaben/a1-api.yml clean install`
-- `mvn -DapiSpec=aufgaben/a1-api-loesung.yml clean install`
+- `mvn -DapiSpec=aufgaben/a1-openapi.yml clean install`
+- `mvn -DapiSpec=loesungen/a1-openapi.yml clean install`
+
+Problem, das auftauchen könnte: Vertauschen der Minimal- und Maximalwerte bei Einschränkungen.  
 
 Aufgabe 2:
 
+Massnahme, um das Problem zu erkennen.
+
 Hard-Codierter Test mit Openapi Validator (isValid Test) und Jackson Serialisierung (Serialization Identity Test)
 
-- `mvn -DapiSpec=aufgaben/a2-api.yml clean install`
-- `mvn -DapiSpec=aufgaben/a2-api-loesung.yml clean install`
+- `mvn -DapiSpec=aufgaben/a2-openapi.yml clean install`
+- `mvn -DapiSpec=loesungen/a2-openapi.yml clean install`
 
 -----
 
@@ -35,5 +39,8 @@ Aufgabe 3:
 
 Komplexe Erweiterung der Api SPEC mit dem Sicherheitsnetz durch die Moustache generierten PBT Tests
 
-- `mvn -DapiSpec=aufgaben/a3-api.yml clean install`
-- `mvn -DapiSpec=aufgaben/a3-api-loesung.yml clean install`
+- `mvn -DapiSpec=aufgaben/a3-openapi.yml clean install`
+- `mvn -DapiSpec=loesungen/a3-openapi.yml clean install`
+
+Mit dem Template werden nun Tests generiert, die auch ganz andere Probleme,
+als bloss die Minimal-/Maximalwert Vertauschung erkennen.

@@ -16,9 +16,8 @@
     </properties>
 
     <modules>
-        <module>hiking-openapi-spec</module>
-        <module>hiking-client-example</module>
 <!--        <module>hiking-slides</module>-->
+        <module>resttemplate-client</module>
     </modules>
 
 </project>
