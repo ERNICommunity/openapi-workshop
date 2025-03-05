@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class RouteSegmentTest {
 
-    OpenApiValidator validator = new OpenApiValidator("target/generated-sources/openapi/api/openapi.yml", RouteSegmentTest.class);
+    OpenApiValidator validator = new OpenApiValidator("target/generated-sources/openapi/api/openapi.yaml", RouteSegmentTest.class);
 
     @Property
     @Domain(RouteSegmentDomain.class)
